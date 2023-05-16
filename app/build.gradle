@@ -11,6 +11,14 @@ plugins {
     id 'application'
 }
 
+jar {
+    manifest {
+        attributes(
+                'Main-Class': 'testapp.App'
+        )
+    }
+}
+
 repositories {
     // Use Maven Central for resolving dependencies.
     mavenCentral()
