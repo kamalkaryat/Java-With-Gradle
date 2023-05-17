@@ -10,4 +10,5 @@ COPY app/src /app/src
 
 RUN ./gradlew build
 
-ENTRYPOINT ["java","-jar","build/libs/*.jar"]
+#ENTRYPOINT ["java","-jar","build/libs/*.jar"]
+ENTRYPOINT ["./gradlew","run"]
