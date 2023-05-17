@@ -1,19 +1,11 @@
-apiVersion: apps/v1
-kind: Deployment
+apiVersion: v1
+kind: Pod
 metadata:
   name: mydep
   labels:
     app: myapp
 spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: myapp
-  template:
-    metadata:
-      labels:
-        app: myapp
-    spec:
-      containers:
-      - name: cont
-        image: "k2developer/testrepo:latest"
+  containers:
+    - name: cont
+      image: "k2developer/testrepo:latest"
+  restartPolicy: Never
