@@ -63,7 +63,7 @@ jobs:
                     steps {
                       sh """
                       sed -i "s/latest/${tag}/" ${deployment_name}
-                      microk8s kubectl apply -f ${deployment_name}
+                      kubectl apply -f ${deployment_name}
                       """
                     }
                   }
