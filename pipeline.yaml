@@ -1,0 +1,74 @@
+jobs:
+  - script: >
+      pipelineJob('javagradleapp/default-agent') {
+        definition {
+          cps {
+            script("""\
+              pipeline {
+                agent any
+                
+                parameters {
+                  string(name:'deployment_file_name', defaultValue: 'deploy.yaml', description: 'kubernetes deployment file')
+                  string(name:'d_username', defaultValue: 'k2developer', description: 'dockerhub username')
+                  string(name:'d_repo', defaultValue: 'testrepo', description: 'dockerhub repo name')
+                  string(name:'project_image_name', defaultValue: 'javagradleapp-img', description: 'docker image name for the project')
+                  string(name:'tag', defaultValue: '6.0', description: 'tag for project image')
+                }
+
+                environment{
+                  deployment_name="${params.deployment_file_name}"
+                  dockerhub_username="${params.d_username}"
+                  repo="${params.d_repo}"
+                  project_image_name="${params.project_image_name}"
+                  tag="${params.tag}"
+                }
+
+                stages {
+                  stage('Clone repository') {
+                    steps {
+                      git branch: 'main', changelog: false, credentialsId: 'githubcreds', poll: false, url: 'https://github.com/kamalkaryat/java-with-gradle.git'
+                    }
+                  }
+
+                  stage ('Dockerhub Login'){ 
+                    steps{ 
+                      withCredentials([usernamePassword(credentialsId: 'dockerhubcreds', passwordVariable: 'password', usernameVariable: 'username')]) { 
+                        sh """
+                        sudo chmod 666 /var/run/docker.sock
+                        docker login -u $username -p $password
+                        """
+                      } 
+                    } 
+                  }
+
+                  stage('Build app') {
+                    steps {
+                      sh """
+                      sudo chmod +x gradlew
+                      docker build -t ${project_image_name}:${tag} .
+                      """
+                    }
+                  }
+        
+                  stage('Push image'){
+                    steps{
+                      sh """
+                      docker tag ${project_image_name}:${tag} ${dockerhub_username}/${repo}:${tag}
+                      docker push ${dockerhub_username}/${repo}:${tag}
+                      """
+                    }
+                  }
+        
+                  stage('Deployment') {
+                    steps {
+                      sh """
+                      sed -i "s/latest/${tag}/" ${deployment_name}
+                      microk8s kubectl apply -f ${deployment_name}
+                      """
+                    }
+                  }
+                }
+              }""".stripIndent())
+          }   
+        }
+      }
