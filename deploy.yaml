@@ -8,4 +8,5 @@ spec:
   containers:
     - name: cont
       image: "k2developer/testrepo:latest"
+  serviceAccountName: ksk-sa 
   restartPolicy: Never
