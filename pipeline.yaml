@@ -87,7 +87,7 @@ jobs:
                       stage('deployment'){
                         steps{
                           container('kube'){
-                            withCredentials([string(credentialsId: 'ksk-sa-token', variable: 'token')]) {
+                            withCredentials([string(credentialsId: 'token', variable: 'token')]) {
                               sh '''
                               cd /home
                               cp \$WORKSPACE/\$deployment_name .
