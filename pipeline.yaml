@@ -78,9 +78,9 @@ jobs:
                         steps{
                           container('shell'){
                             script{
-                              sh """
+                              sh '''
                               sed -i "s/latest/\$tag/" \$deployment_name
-                              """
+                              '''
                             }
                           }
                         }
@@ -90,13 +90,13 @@ jobs:
                         steps{
                           container('kube'){
                             withCredentials([string(credentialsId: 'ksk-sa-token', variable: 'token')]) {
-                              sh """
+                              sh '''
                               cd /home
                               cp \${env.WORKSPACE}/\$deployment_name .
                               ls
                               ./kubectl version --token=\$token
                               ./kubectl apply -f \$deployment_name --token=\$token
-                              """
+                              '''
                             }
                           }
                         }
