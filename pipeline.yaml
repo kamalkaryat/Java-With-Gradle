@@ -77,11 +77,9 @@ jobs:
                       stage('update tag'){
                         steps{
                           container('shell'){
-                            script{
                               sh '''
                               sed -i "s/latest/\$tag/" \$deployment_name
                               '''
-                            }
                           }
                         }
                       }
